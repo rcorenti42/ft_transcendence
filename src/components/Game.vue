@@ -82,47 +82,48 @@ export default {
     }
   },
   methods: {
-    // update(delta: number) {
-    //   this.lastPos = this.pos
-    //   this.pos += this.speed * delta
-    //   if (this.pos >= this.limit || this.pos <= 0)
-    //     this.speed = -this.speed
-    // },
     quit() {
       this.$router.push('/hub')
     },
     handleKeyUp(e: KeyboardEvent) {
+      if (e.key === "ArrowUp")
+        this.gameConfig.keyUp = false
+      if (e.key === "ArrowDown")
+        this.gameConfig.keyDown = false
     },
     handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "ArrowUp")
+        this.gameConfig.keyUp = true
+      if (e.key === "ArrowDown")
+        this.gameConfig.keyDown = true
     }
   },
   mounted() {
     // 
     // temporaire, est censé recevoir les données depuis le backend
     //
-    this.ball.posX = 50
-    this.ball.posY = 50
-    this.ball.lastPosX = 0
-    this.ball.lastPosY = 0
-    this.ball.speedX = 5
-    this.ball.speedY = 5
-    this.ball.ray = 7
+
     this.ownerPaddle.height = 80
     this.ownerPaddle.width = 10
     this.ownerPaddle.pos = 30
     this.ownerPaddle.lastPos = 0
-    this.ownerPaddle.speed = 0
+    this.ownerPaddle.speed = 1
     this.adversePaddle.height = 80
     this.adversePaddle.width = 10
     this.adversePaddle.pos = 30
     this.adversePaddle.lastPos = 0
-    this.adversePaddle.speed = 0
+    this.adversePaddle.speed = 1
     this.table.width = 750
     this.table.height = 500
-    this.ownerScore.pos = 250
+    this.ball.posX = this.table.width / 2
+    this.ball.posY = this.table.height / 2
+    this.ball.lastPosX = this.ball.posX
+    this.ball.lastPosY = this.ball.posY
+    this.ball.speedX = 0.5
+    this.ball.speedY = 0.5
+    this.ball.ray = 7
     this.ownerScore.maximum = 11
     this.ownerScore.score = 0
-    this.adverseScore.pos = 450
     this.adverseScore.maximum = 11
     this.adverseScore.score = 0
     this.gameConfig.fps = 60
@@ -131,15 +132,19 @@ export default {
     this.gameConfig.lastFrameTimeMs = 0
     this.gameConfig.maxFPS = 144
     this.gameConfig.delta = 0
+    this.gameConfig.keyUp = false
+    this.gameConfig.keyDown = false
     this.gameConfig.frameId = 0
     //
     //
     //
     this.canvas = <HTMLCanvasElement> document.getElementById('gameCanvas')
-    this.game = new Game(this.canvas, this.gameConfig, this.ball, this.ownerPaddle, this.adversePaddle, this.ownerScore, this.adverseScore, this.table, this.player.id, this.$store.getters.getIGPlayers)
-    this.game.startLoop()
+    this.game = new Game(this.canvas, this.gameConfig, this.ball, this.ownerPaddle,
+      this.adversePaddle, this.ownerScore, this.adverseScore, this.table, this.player.id,
+      this.$store.getters.getIGPlayers)
     document.addEventListener('keyup', this.handleKeyUp)
     document.addEventListener('keydown', this.handleKeyDown)
+    this.game.startLoop()
   },
   unmounted() {
     this.game!.stopLoop()

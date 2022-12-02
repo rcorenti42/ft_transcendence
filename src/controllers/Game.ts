@@ -40,24 +40,34 @@ export class Game {
         this.id = id
     }
 
-    private drawPaddles(multi: number) {
-        this.context!.fillRect(50, this.ownerPaddle.lastPos + 
-                                (this.ownerPaddle.pos - this.ownerPaddle.lastPos) *
-                                multi, this.ownerPaddle.width, this.ownerPaddle.height)
-        this.context!.fillRect(650, this.adversePaddle.lastPos +
-                                (this.adversePaddle.pos - this.adversePaddle.lastPos) *
-                                multi, this.adversePaddle.width, this.adversePaddle.height)
+    private initBall() {
+        this.ball.posX = this.table.width / 2
+        this.ball.lastPosX = this.ball.posX
+        this.ball.lastPosY = this.ball.posY
+        this.ball.speedX = 0.5
+    }
+
+    private drawPaddles() {
+        this.context!.fillRect(this.table.width - this.ownerPaddle.width - this.table.width / 15, this.ownerPaddle.lastPos + 
+                                (this.ownerPaddle.pos - this.ownerPaddle.lastPos),
+                                this.ownerPaddle.width, this.ownerPaddle.height)
+        this.context!.fillRect(this.table.width / 15, this.adversePaddle.lastPos +
+                                (this.adversePaddle.pos - this.adversePaddle.lastPos),
+                                this.adversePaddle.width, this.adversePaddle.height)
     }
 
     private drawBall(multi: number) {
+        this.context!.beginPath()
         this.context!.arc(this.ball.lastPosX +
                             (this.ball.posX - this.ball.lastPosX) *
                             multi, this.ball.posY, this.ball.ray, 0, 2 * Math.PI)
+        this.context!.fill()
+        this.context!.closePath()
     }
 
     private drawScores() {
-        this.context!.fillText(this.ownerScore.score.toString(), this.ownerScore.pos, 100)
-        this.context!.fillText(this.adverseScore.score.toString(), this.adverseScore.pos, 100)
+        this.context!.fillText(this.ownerScore.score.toString(), this.table.width * 0.6, this.table.height / 5)
+        this.context!.fillText(this.adverseScore.score.toString(), this.table.width * 0.3, this.table.height / 5)
     }
 
     private updateBall() {
@@ -65,16 +75,33 @@ export class Game {
         this.ball.lastPosY = this.ball.posY
         this.ball.posX += this.ball.speedX * 1000 / 60
         this.ball.posY += this.ball.speedY * 1000 / 60
-        if (this.ball.posX >= 750 || this.ball.posX <= 0)
+        if ((this.ball.posX + this.ball.ray * 2 >= this.table.width - this.ownerPaddle.width - this.table.width / 15
+                && this.ball.posY + this.ball.ray * 2 >= this.ownerPaddle.pos
+                && this.ball.posY <= this.ownerPaddle.pos + this.ownerPaddle.height)
+                || (this.ball.posX <= this.table.width / 15 && this.ball.posY + this.ball.ray * 2 >= this.adversePaddle.pos
+                && this.ball.posY <= this.adversePaddle.pos + this.adversePaddle.height))
             this.ball.speedX = -this.ball.speedX
-        if (this.ball.posY >= 500 || this.ball.posY <= 0)
+        if (this.ball.posY + this.ball.ray * 2 >= this.table.height || this.ball.posY <= 0)
             this.ball.speedY = -this.ball.speedY
+        if (this.ball.posX + this.ball.ray > this.ownerPaddle.width / 2 + this.table.width - this.ownerPaddle.width - this.table.width / 15) {
+            this.initBall()
+            ++this.adverseScore.score
+        }
+        if (this.ball.posX + this.ball.ray < this.table.width / 15) {
+            this.initBall()
+            ++this.ownerScore.score
+        }
     }
 
-    private updatePaddle(id: number, multi: number) {
-    }
-
-    private updateScore(score: number) {
+    private updatePaddle() {
+        if (this.gameConfig.keyDown && this.ownerPaddle.pos + this.ownerPaddle.height <= this.table.height * 0.9) {
+            this.ownerPaddle.lastPos = this.ownerPaddle.pos
+            this.ownerPaddle.pos += this.ownerPaddle.speed * 1000 / 60
+        }
+        if (this.gameConfig.keyUp && this.ownerPaddle.pos >= this.table.height * 0.1) {
+            this.ownerPaddle.lastPos = this.ownerPaddle.pos
+            this.ownerPaddle.pos -= this.ownerPaddle.speed * 1000 / 60
+        }
     }
 
     private beginLoop() {
@@ -121,28 +148,28 @@ export class Game {
 
     public update() {
         this.updateBall()
-        //this.updatePaddle()
-        //this.updateScore
-        //this.draw()
+        this.updatePaddle()
     }
 
     public draw(multi: number) {
         this.context!.clearRect(0, 0, this.table.width, this.table.height)
+        for (let i = 0; i <= this.table.height; i += this.table.width / 35)
+            this.context!.fillRect(this.table.width / 2 - this.table.width / 70, i, this.table.width / 70, this.table.width / 70)
         this.context!.fillText(Math.round(this.gameConfig.fps).toString(), 0, 60)
-        this.drawPaddles(multi)
+        this.drawPaddles()
         this.drawBall(multi)
         this.drawScores()
     }
 
     public startLoop() {
-            this.gameConfig.frameId = requestAnimationFrame((timestamp) => {
-                this.draw(1)
-                this.gameConfig.lastFrameTimeMs = timestamp
-                this.gameConfig.lastFpsUpdate = timestamp
-                this.gameConfig.framesThisSecond = 0
-                this.beginLoop()
-                this.gameConfig.frameId = requestAnimationFrame(this.loop.bind(this))
-            })
+        this.gameConfig.frameId = requestAnimationFrame((timestamp) => {
+            this.draw(1)
+            this.gameConfig.lastFrameTimeMs = timestamp
+            this.gameConfig.lastFpsUpdate = timestamp
+            this.gameConfig.framesThisSecond = 0
+            this.beginLoop()
+            this.gameConfig.frameId = requestAnimationFrame(this.loop.bind(this))
+        })
     }
 
     public stopLoop() {

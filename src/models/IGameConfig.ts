@@ -9,7 +9,12 @@ interface IGameConfig {
     keyUp: boolean,
     keyDown: boolean,
     running: boolean,
-    started: boolean
+    started: boolean,
+    /// bot / QA
+    AKey: boolean,
+    QKey: boolean,
+    modeButtonText: string
+    ///
 }
 
 export default IGameConfig

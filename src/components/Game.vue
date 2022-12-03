@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang='ts'>
 import Vue from 'vue';
 import IGameConfig from '../models/IGameConfig'
 import IBall from '../models/IBall'
@@ -14,7 +14,10 @@ export default {
     return {
       game: <Game | null> null,
       canvas: <HTMLCanvasElement> document.getElementById('gameCanvas'),
-      winner: ''
+      winner: '',
+      /// bot / QA
+      modeButtonText: 'BOT'
+      ///
     }
   },
   computed: {
@@ -86,17 +89,38 @@ export default {
       this.$router.push('/hub')
     },
     handleKeyUp(e: KeyboardEvent) {
-      if (e.key === "ArrowUp")
+      if (e.key === 'ArrowUp')
         this.gameConfig.keyUp = false
-      if (e.key === "ArrowDown")
+      if (e.key === 'ArrowDown')
         this.gameConfig.keyDown = false
+      /// bot / QA
+      if (e.key === 'q')
+        this.gameConfig.QKey = false
+      if (e.key === 'a')
+        this.gameConfig.AKey = false
+      ///
     },
     handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "ArrowUp")
+      if (e.key === 'ArrowUp')
         this.gameConfig.keyUp = true
-      if (e.key === "ArrowDown")
+      if (e.key === 'ArrowDown')
         this.gameConfig.keyDown = true
+      /// bot / QA
+      if (e.key === 'q')
+        this.gameConfig.QKey = true
+      if (e.key === 'a')
+        this.gameConfig.AKey = true
+      ///
+    },
+    /// bot / QA
+    modeButtonClick() {
+      if (this.modeButtonText === 'BOT')
+        this.modeButtonText = 'Q/A'
+      else
+        this.modeButtonText = 'BOT'
+      this.gameConfig.modeButtonText = this.modeButtonText
     }
+    ///
   },
   mounted() {
     // 
@@ -138,6 +162,10 @@ export default {
     //
     //
     //
+    /// bot / QA
+    this.gameConfig.AKey = false
+    this.gameConfig.QKey = false
+    ///
     this.canvas = <HTMLCanvasElement> document.getElementById('gameCanvas')
     this.game = new Game(this.canvas, this.gameConfig, this.ball, this.ownerPaddle,
       this.adversePaddle, this.ownerScore, this.adverseScore, this.table, this.player.id,
@@ -147,7 +175,6 @@ export default {
     this.game.startLoop()
   },
   unmounted() {
-    this.game!.stopLoop()
     document.removeEventListener('keyup', this.handleKeyUp)
     document.removeEventListener('keydown', this.handleKeyDown)
   }
@@ -156,7 +183,10 @@ export default {
 
 <template>
   <div>
-    <canvas id="gameCanvas"></canvas>
+    <canvas id='gameCanvas'></canvas>
+  </div>
+  <div>
+    <button id="modeButton" @click="modeButtonClick">{{modeButtonText}}</button>
   </div>
 </template>
 

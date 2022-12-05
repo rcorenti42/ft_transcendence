@@ -5,6 +5,7 @@ import ITable from '../models/ITable'
 import IPlayer from '../models/IPlayer'
 import IGameConfig from '../models/IGameConfig'
 import { time } from 'console'
+import { threadId } from 'worker_threads'
 
 export class Game {
     gameConfig: IGameConfig
@@ -46,7 +47,8 @@ export class Game {
         this.ball.posX = this.table.width / 2
         this.ball.lastPosX = this.ball.posX
         this.ball.lastPosY = this.ball.posY
-        this.ball.speedX = 0.5
+        this.ball.speedX = this.ball.speedX > 0 ? this.gameConfig.gameSpeed : -this.gameConfig.gameSpeed
+        this.ball.hits = 0
     }
 
     private drawPaddles() {
@@ -77,16 +79,49 @@ export class Game {
         this.ball.lastPosY = this.ball.posY
         this.ball.posX += this.ball.speedX * 1000 / 60
         this.ball.posY += this.ball.speedY * 1000 / 60
-        if ((this.ball.posX + this.ball.ray * 2 >= this.table.width - this.ownerPaddle.width - this.table.width / 15
+        if ((this.ball.posX  >= this.table.width - this.ownerPaddle.width - this.table.width / 15
                 && this.ball.posY + this.ball.ray * 2 >= this.ownerPaddle.pos
                 && this.ball.posY <= this.ownerPaddle.pos + this.ownerPaddle.height)
                 || (this.ball.posX <= this.table.width / 15 + this.adversePaddle.width
                 && this.ball.posY + this.ball.ray * 2 >= this.adversePaddle.pos
-                && this.ball.posY <= this.adversePaddle.pos + this.adversePaddle.height))
+                && this.ball.posY <= this.adversePaddle.pos + this.adversePaddle.height)) {
+            const height = this.ball.posX < this.table.width / 2 ? this.adversePaddle.height : this.ownerPaddle.height
+            const pos = this.ball.posX < this.table.width / 2 ? this.adversePaddle.pos : this.ownerPaddle.pos
+            switch (Math.ceil((this.ball.posY + this.ball.ray - pos) / height * 7)) {
+                case 1:
+                    this.ball.speedY = -2 * this.gameConfig.gameSpeed
+                    break
+                case 2:
+                    this.ball.speedY = -1.4 * this.gameConfig.gameSpeed
+                    break
+                case 3:
+                    this.ball.speedY = -0.7 * this.gameConfig.gameSpeed
+                    break
+                case 4:
+                    this.ball.speedY = 0
+                    break
+                case 5:
+                    this.ball.speedY = 0.7 * this.gameConfig.gameSpeed
+                    break
+                case 6:
+                    this.ball.speedY = 1.4 * this.gameConfig.gameSpeed
+                    break
+                case 7:
+                    this.ball.speedY = 2 * this.gameConfig.gameSpeed
+                    break
+            }
             this.ball.speedX = -this.ball.speedX
+            this.ball.hits++
+        }
+        if (this.ball.hits < 4)
+            this.ball.speedX = this.ball.speedX > 0 ? this.gameConfig.gameSpeed : -this.gameConfig.gameSpeed
+        else if (this.ball.hits > 11)
+            this.ball.speedX = this.ball.speedX > 0 ? this.gameConfig.gameSpeed * 2.1 : -this.gameConfig.gameSpeed * 2.1
+        else
+            this.ball.speedX = this.ball.speedX > 0 ? this.gameConfig.gameSpeed * 1.6 : -this.gameConfig.gameSpeed * 1.6
         if (this.ball.posY + this.ball.ray * 2 >= this.table.height || this.ball.posY <= 0)
             this.ball.speedY = -this.ball.speedY
-        if (this.ball.posX + this.ball.ray > this.ownerPaddle.width / 2 + this.table.width - this.ownerPaddle.width - this.table.width / 15) {
+        if (this.ball.posX + this.ball.ray > this.ownerPaddle.width / 2 + this.table.width - this.ownerPaddle.width / 2 - this.table.width / 15) {
             this.initBall()
             ++this.adverseScore.score
         }

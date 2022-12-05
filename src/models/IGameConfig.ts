@@ -6,6 +6,7 @@ interface IGameConfig {
     maxFPS: number,
     delta: number,
     frameId: number,
+    gameSpeed: number,
     keyUp: boolean,
     keyDown: boolean,
     running: boolean,

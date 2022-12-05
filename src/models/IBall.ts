@@ -5,7 +5,8 @@ interface IBall {
     lastPosY: number,
     speedX: number,
     speedY: number,
-    ray: number
+    ray: number,
+    hits: number
 }
 
 export default IBall

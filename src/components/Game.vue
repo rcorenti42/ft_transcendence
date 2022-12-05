@@ -139,13 +139,6 @@ export default {
     this.adversePaddle.speed = 1
     this.table.width = 750
     this.table.height = 500
-    this.ball.posX = this.table.width / 2
-    this.ball.posY = this.table.height / 2
-    this.ball.lastPosX = this.ball.posX
-    this.ball.lastPosY = this.ball.posY
-    this.ball.speedX = 0.5
-    this.ball.speedY = 0.5
-    this.ball.ray = 7
     this.ownerScore.maximum = 11
     this.ownerScore.score = 0
     this.adverseScore.maximum = 11
@@ -159,6 +152,15 @@ export default {
     this.gameConfig.keyUp = false
     this.gameConfig.keyDown = false
     this.gameConfig.frameId = 0
+    this.gameConfig.gameSpeed = 0.3
+    this.ball.posX = this.table.width / 2
+    this.ball.posY = this.table.height / 2
+    this.ball.lastPosX = this.ball.posX
+    this.ball.lastPosY = this.ball.posY
+    this.ball.speedX = 1 * this.gameConfig.gameSpeed
+    this.ball.speedY = 1 * this.gameConfig.gameSpeed
+    this.ball.ray = 7
+    this.ball.hits = 0
     //
     //
     //

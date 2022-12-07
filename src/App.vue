@@ -6,11 +6,11 @@ export default defineComponent({})
 
 <template>
   <div>
-    <button id="chatButton" @click="$router.push('/chat')">Chat</button>
+    <button id="chatButton" @click="$router.push('chat')">Chat</button>
     |
     <button id="homeButton" @click="$router.push('/')">Home</button>
     |
-    <button id="gameButton" @click="$router.push('/game')">Game</button>
+    <button id="gameButton" @click="$router.push('hub')">Game</button>
   </div>
   <router-view />
 </template>

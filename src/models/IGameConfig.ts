@@ -11,7 +11,9 @@ interface IGameConfig {
     keyDown: boolean,
     running: boolean,
     started: boolean,
-    /// bot / QA
+    PowerUpsMode: boolean,
+    mode: string,
+    /// temporaire /// bot / QA
     AKey: boolean,
     QKey: boolean,
     modeButtonText: string

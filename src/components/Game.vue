@@ -1,13 +1,10 @@
 <script lang='ts'>
-import Vue from 'vue';
 import IGameConfig from '../models/IGameConfig'
 import IBall from '../models/IBall'
 import IPaddle from '../models/IPaddle'
 import IScore from '../models/IScore'
 import ITable from '../models/ITable'
-import { Game } from '../controllers/Game' 
-import { timeStamp } from 'console';
-import { start } from 'repl';
+import { Game } from '../controllers/Game'
 
 export default {
   data() {
@@ -15,7 +12,7 @@ export default {
       game: <Game | null> null,
       canvas: <HTMLCanvasElement> document.getElementById('gameCanvas'),
       winner: '',
-      /// bot / QA
+      /// temporaire /// bot / QA
       modeButtonText: 'BOT'
       ///
     }
@@ -93,7 +90,7 @@ export default {
         this.gameConfig.keyUp = false
       if (e.key === 'ArrowDown')
         this.gameConfig.keyDown = false
-      /// bot / QA
+      /// temporaire /// bot / QA
       if (e.key === 'q')
         this.gameConfig.QKey = false
       if (e.key === 'a')
@@ -105,14 +102,14 @@ export default {
         this.gameConfig.keyUp = true
       if (e.key === 'ArrowDown')
         this.gameConfig.keyDown = true
-      /// bot / QA
+      /// temporaire /// bot / QA
       if (e.key === 'q')
         this.gameConfig.QKey = true
       if (e.key === 'a')
         this.gameConfig.AKey = true
       ///
     },
-    /// bot / QA
+    /// temporaire /// bot / QA
     modeButtonClick() {
       if (this.modeButtonText === 'BOT')
         this.modeButtonText = 'Q/A'
@@ -147,7 +144,7 @@ export default {
     this.gameConfig.framesThisSecond = 0
     this.gameConfig.lastFpsUpdate = 0
     this.gameConfig.lastFrameTimeMs = 0
-    this.gameConfig.maxFPS = 144
+    this.gameConfig.maxFPS = 360
     this.gameConfig.delta = 0
     this.gameConfig.keyUp = false
     this.gameConfig.keyDown = false
@@ -157,21 +154,22 @@ export default {
     this.ball.posY = this.table.height / 2
     this.ball.lastPosX = this.ball.posX
     this.ball.lastPosY = this.ball.posY
-    this.ball.speedX = 1 * this.gameConfig.gameSpeed
-    this.ball.speedY = 1 * this.gameConfig.gameSpeed
+    this.ball.speedX = this.gameConfig.gameSpeed
+    this.ball.speedY = this.gameConfig.gameSpeed
     this.ball.ray = 7
     this.ball.hits = 0
     //
     //
     //
-    /// bot / QA
+    /// temoraire /// bot / QA
     this.gameConfig.AKey = false
     this.gameConfig.QKey = false
     ///
     this.canvas = <HTMLCanvasElement> document.getElementById('gameCanvas')
     this.game = new Game(this.canvas, this.gameConfig, this.ball, this.ownerPaddle,
-      this.adversePaddle, this.ownerScore, this.adverseScore, this.table, this.player.id,
-      this.$store.getters.getIGPlayers)
+        this.adversePaddle, this.ownerScore, this.adverseScore, this.table, this.player.id,
+        this.$store.getters.getIGPlayers)
+    this.canvas.style.background = this.gameConfig.mode === 'powerUps' ? 'orchid' : 'black'
     document.addEventListener('keyup', this.handleKeyUp)
     document.addEventListener('keydown', this.handleKeyDown)
     this.game.startLoop()
@@ -188,12 +186,9 @@ export default {
     <canvas id='gameCanvas'></canvas>
   </div>
   <div>
-    <button id="modeButton" @click="modeButtonClick">{{modeButtonText}}</button>
+    <button id="modeButton" @click="modeButtonClick">{{ modeButtonText }}</button>
   </div>
 </template>
 
 <style scoped>
-canvas {
-  background-color: black;
-}
 </style>

@@ -4,8 +4,6 @@ import IScore from '../models/IScore'
 import ITable from '../models/ITable'
 import IPlayer from '../models/IPlayer'
 import IGameConfig from '../models/IGameConfig'
-import { time } from 'console'
-import { threadId } from 'worker_threads'
 
 export class Game {
     gameConfig: IGameConfig
@@ -79,16 +77,16 @@ export class Game {
         this.ball.lastPosY = this.ball.posY
         this.ball.posX += this.ball.speedX * 1000 / 60
         this.ball.posY += this.ball.speedY * 1000 / 60
-        if ((this.ball.posX  >= this.table.width - this.ownerPaddle.width - this.table.width / 15
-                && this.ball.posY + this.ball.ray * 2 >= this.ownerPaddle.pos
-                && this.ball.posY <= this.ownerPaddle.pos + this.ownerPaddle.height)
-                || (this.ball.posX <= this.table.width / 15 + this.adversePaddle.width
-                && this.ball.posY + this.ball.ray * 2 >= this.adversePaddle.pos
-                && this.ball.posY <= this.adversePaddle.pos + this.adversePaddle.height)) {
+        if ((this.table.width - this.ownerPaddle.width - this.table.width / 15 <= this.ball.posX + this.ball.ray
+                && this.ball.posY + this.ball.ray >= this.ownerPaddle.pos
+                && this.ball.posY - this.ball.ray <= this.ownerPaddle.pos + this.ownerPaddle.height)
+                || (this.table.width / 15 + this.adversePaddle.width >= this.ball.posX - this.ball.ray
+                && this.ball.posY + this.ball.ray >= this.adversePaddle.pos
+                && this.ball.posY - this.ball.ray <= this.adversePaddle.pos + this.adversePaddle.height)) {
             const height = this.ball.posX < this.table.width / 2 ? this.adversePaddle.height : this.ownerPaddle.height
             const pos = this.ball.posX < this.table.width / 2 ? this.adversePaddle.pos : this.ownerPaddle.pos
-            switch (Math.ceil((this.ball.posY + this.ball.ray - pos) / height * 7)) {
-                case 1:
+            switch (Math.ceil(((this.ball.posY - pos) / height) * 7)) {
+                case 0 || 1:
                     this.ball.speedY = -2 * this.gameConfig.gameSpeed
                     break
                 case 2:
@@ -106,7 +104,7 @@ export class Game {
                 case 6:
                     this.ball.speedY = 1.4 * this.gameConfig.gameSpeed
                     break
-                case 7:
+                case 7 || 8:
                     this.ball.speedY = 2 * this.gameConfig.gameSpeed
                     break
             }
@@ -121,52 +119,52 @@ export class Game {
             this.ball.speedX = this.ball.speedX > 0 ? this.gameConfig.gameSpeed * 1.6 : -this.gameConfig.gameSpeed * 1.6
         if (this.ball.posY + this.ball.ray * 2 >= this.table.height || this.ball.posY <= 0)
             this.ball.speedY = -this.ball.speedY
-        if (this.ball.posX + this.ball.ray > this.ownerPaddle.width / 2 + this.table.width - this.ownerPaddle.width / 2 - this.table.width / 15) {
+        if (this.table.width - this.ownerPaddle.width - this.table.width / 15 < this.ball.posX + this.ball.ray
+                && (this.ball.posY + this.ball.ray < this.ownerPaddle.pos
+                    || this.ball.posY - this.ball.ray > this.ownerPaddle.pos + this.ownerPaddle.height)) {
             this.initBall()
             ++this.adverseScore.score
         }
-        if (this.ball.posX + this.ball.ray < this.table.width / 15) {
+        if (this.table.width / 15 + this.adversePaddle.width > this.ball.posX - this.ball.ray
+                && (this.ball.posY + this.ball.ray < this.adversePaddle.pos
+                    || this.ball.posY - this.ball.ray > this.adversePaddle.pos + this.adversePaddle.height)) {
             this.initBall()
             ++this.ownerScore.score
         }
     }
 
     private updatePaddle() {
-        if (this.gameConfig.keyDown && this.ownerPaddle.pos + this.ownerPaddle.height <= this.table.height * 0.9) {
+        if (this.gameConfig.keyUp || this.gameConfig.keyDown)
             this.ownerPaddle.lastPos = this.ownerPaddle.pos
+        if (this.gameConfig.keyDown && this.ownerPaddle.pos < this.table.height - this.ownerPaddle.height - this.ball.ray * 4)
             this.ownerPaddle.pos += this.ownerPaddle.speed * 1000 / 60
-        }
-        if (this.gameConfig.keyUp && this.ownerPaddle.pos >= this.table.height * 0.1) {
-            this.ownerPaddle.lastPos = this.ownerPaddle.pos
+        else if (this.gameConfig.keyDown)
+            this.ownerPaddle.pos = this.table.height - this.ownerPaddle.height - this.ball.ray * 4
+        if (this.gameConfig.keyUp && this.ownerPaddle.pos > this.ball.ray * 4)
             this.ownerPaddle.pos -= this.ownerPaddle.speed * 1000 / 60
-        }
-        /// bot / QA
+        else if (this.gameConfig.keyUp)
+            this.ownerPaddle.pos = this.ball.ray * 4
+        /// temporaire /// bot / QA
         if (this.gameConfig.modeButtonText === 'Q/A') {
-            if (this.gameConfig.AKey && this.adversePaddle.pos + this.adversePaddle.height < this.table.height * 0.9) {
+            if (this.gameConfig.QKey || this.gameConfig.AKey)
                 this.adversePaddle.lastPos = this.adversePaddle.pos
+            if (this.gameConfig.AKey && this.adversePaddle.pos < this.table.height - this.adversePaddle.height - this.ball.ray * 4)
                 this.adversePaddle.pos += this.adversePaddle.speed * 1000 / 60
-            }
-            if (this.gameConfig.QKey && this.adversePaddle.pos >= this.table.height * 0.1) {
-                this.adversePaddle.lastPos = this.adversePaddle.pos
+            else if (this.gameConfig.AKey)
+                this.adversePaddle.pos = this.table.height - this.adversePaddle.height - this.ball.ray * 4
+            if (this.gameConfig.QKey && this.adversePaddle.pos > this.ball.ray * 4)
                 this.adversePaddle.pos -= this.adversePaddle.speed * 1000 / 60
-            }
-        } else {
-            if (this.ball.posY > this.adversePaddle.pos + this.adversePaddle.height / 2
-                    && this.adversePaddle.pos + this.adversePaddle.height < this.table.height * 0.9) {
-                this.adversePaddle.lastPos = this.adversePaddle.pos
-                this.adversePaddle.pos += this.adversePaddle.speed / 2 * 1000 / 60
-            }
-            if (this.ball.posY < this.adversePaddle.pos + this.adversePaddle.height / 2
-                    && this.adversePaddle.pos >= this.table.height * 0.1) {
-                this.adversePaddle.lastPos = this.adversePaddle.pos
-                this.adversePaddle.pos -= this.adversePaddle.speed / 2 * 1000 / 60
-            }
-        }
+            else if (this.gameConfig.QKey)
+                this.adversePaddle.pos = this.ball.ray * 4
+        } else if (this.adversePaddle.pos != this.ball.posY - this.adversePaddle.height / 2
+                && this.ball.posY < this.table.height - this.adversePaddle.height / 2 - this.ball.ray * 4
+                && this.ball.posY > this.ball.ray * 4 + this.adversePaddle.height / 2)
+            this.adversePaddle.pos = this.ball.posY - this.adversePaddle.height / 2
         ///
     }
 
     private beginLoop() {
-        this.context!.fillStyle = 'white'
+        this.context!.fillStyle = this.gameConfig.mode === 'original' ? 'white' : 'midnightblue'
         this.context!.font = '75px monospace'
     }
 
@@ -217,15 +215,14 @@ export class Game {
     }
 
     public update() {
-        this.updateBall()
         this.updatePaddle()
+        this.updateBall()
     }
 
     public draw(multi: number) {
         this.context!.clearRect(0, 0, this.table.width, this.table.height)
         for (let i = 0; i <= this.table.height; i += this.table.width / 35)
             this.context!.fillRect(this.table.width / 2 - this.table.width / 70, i, this.table.width / 70, this.table.width / 70)
-        this.context!.fillText(Math.round(this.gameConfig.fps).toString(), 0, 60)
         this.drawPaddles()
         this.drawBall(multi)
         this.drawScores()

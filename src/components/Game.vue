@@ -134,8 +134,8 @@ export default {
     this.adversePaddle.pos = 30
     this.adversePaddle.lastPos = 0
     this.adversePaddle.speed = 1
-    this.table.width = 750
-    this.table.height = 500
+    this.table.width = 858
+    this.table.height = 525
     this.ownerScore.maximum = 11
     this.ownerScore.score = 0
     this.adverseScore.maximum = 11

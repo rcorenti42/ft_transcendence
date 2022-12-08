@@ -43,9 +43,11 @@ export class Game {
 
     private initBall() {
         this.ball.posX = this.table.width / 2
+        this.ball.posY = this.table.height / 2
         this.ball.lastPosX = this.ball.posX
         this.ball.lastPosY = this.ball.posY
         this.ball.speedX = this.ball.speedX > 0 ? this.gameConfig.gameSpeed : -this.gameConfig.gameSpeed
+        this.ball.speedY = 0
         this.ball.hits = 0
     }
 
@@ -77,12 +79,16 @@ export class Game {
         this.ball.lastPosY = this.ball.posY
         this.ball.posX += this.ball.speedX * 1000 / 60
         this.ball.posY += this.ball.speedY * 1000 / 60
-        if ((this.table.width - this.ownerPaddle.width - this.table.width / 15 <= this.ball.posX + this.ball.ray
-                && this.ball.posY + this.ball.ray >= this.ownerPaddle.pos
-                && this.ball.posY - this.ball.ray <= this.ownerPaddle.pos + this.ownerPaddle.height)
-                || (this.table.width / 15 + this.adversePaddle.width >= this.ball.posX - this.ball.ray
-                && this.ball.posY + this.ball.ray >= this.adversePaddle.pos
-                && this.ball.posY - this.ball.ray <= this.adversePaddle.pos + this.adversePaddle.height)) {
+        if ((this.ball.posX > this.table.width / 15
+                    && this.ball.posX < this.table.width / 15 + this.adversePaddle.width
+                    && this.ball.speedX < 0 
+                    && this.ball.posY > this.adversePaddle.pos
+                    && this.ball.posY < this.adversePaddle.pos + this.adversePaddle.height)
+                || ( this.ball.posX > this.table.width - this.table.width / 15 - this.ownerPaddle.width
+                    && this.ball.posX < this.table.width - this.table.width / 15
+                    && this.ball.speedX > 0
+                    && this.ball.posY > this.ownerPaddle.pos
+                    && this.ball.posY < this.ownerPaddle.pos + this.ownerPaddle.height)) {
             const height = this.ball.posX < this.table.width / 2 ? this.adversePaddle.height : this.ownerPaddle.height
             const pos = this.ball.posX < this.table.width / 2 ? this.adversePaddle.pos : this.ownerPaddle.pos
             switch (Math.ceil(((this.ball.posY - pos) / height) * 7)) {
@@ -119,15 +125,11 @@ export class Game {
             this.ball.speedX = this.ball.speedX > 0 ? this.gameConfig.gameSpeed * 1.6 : -this.gameConfig.gameSpeed * 1.6
         if (this.ball.posY + this.ball.ray * 2 >= this.table.height || this.ball.posY <= 0)
             this.ball.speedY = -this.ball.speedY
-        if (this.table.width - this.ownerPaddle.width - this.table.width / 15 < this.ball.posX + this.ball.ray
-                && (this.ball.posY + this.ball.ray < this.ownerPaddle.pos
-                    || this.ball.posY - this.ball.ray > this.ownerPaddle.pos + this.ownerPaddle.height)) {
+        if (this.ball.posX - this.ball.ray >= this.table.width) {
             this.initBall()
             ++this.adverseScore.score
         }
-        if (this.table.width / 15 + this.adversePaddle.width > this.ball.posX - this.ball.ray
-                && (this.ball.posY + this.ball.ray < this.adversePaddle.pos
-                    || this.ball.posY - this.ball.ray > this.adversePaddle.pos + this.adversePaddle.height)) {
+        if (this.ball.posX + this.ball.ray <= 0) {
             this.initBall()
             ++this.ownerScore.score
         }

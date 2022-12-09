@@ -169,7 +169,7 @@ export default {
     this.game = new Game(this.canvas, this.gameConfig, this.ball, this.ownerPaddle,
         this.adversePaddle, this.ownerScore, this.adverseScore, this.table, this.player.id,
         this.$store.getters.getIGPlayers)
-    this.canvas.style.background = this.gameConfig.mode === 'powerUps' ? 'orchid' : 'black'
+    this.canvas.style.background = 'black'
     document.addEventListener('keyup', this.handleKeyUp)
     document.addEventListener('keydown', this.handleKeyDown)
     this.game.startLoop()

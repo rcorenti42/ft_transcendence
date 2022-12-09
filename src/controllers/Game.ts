@@ -91,29 +91,20 @@ export class Game {
                     && this.ball.posY < this.ownerPaddle.pos + this.ownerPaddle.height)) {
             const height = this.ball.posX < this.table.width / 2 ? this.adversePaddle.height : this.ownerPaddle.height
             const pos = this.ball.posX < this.table.width / 2 ? this.adversePaddle.pos : this.ownerPaddle.pos
-            switch (Math.ceil(((this.ball.posY - pos) / height) * 7)) {
-                case 0 || 1:
-                    this.ball.speedY = -2 * this.gameConfig.gameSpeed
-                    break
-                case 2:
-                    this.ball.speedY = -1.4 * this.gameConfig.gameSpeed
-                    break
-                case 3:
-                    this.ball.speedY = -0.7 * this.gameConfig.gameSpeed
-                    break
-                case 4:
-                    this.ball.speedY = 0
-                    break
-                case 5:
-                    this.ball.speedY = 0.7 * this.gameConfig.gameSpeed
-                    break
-                case 6:
-                    this.ball.speedY = 1.4 * this.gameConfig.gameSpeed
-                    break
-                case 7 || 8:
-                    this.ball.speedY = 2 * this.gameConfig.gameSpeed
-                    break
-            }
+            if (this.ball.posY <= pos + height / 7)
+                this.ball.speedY = -2 * this.gameConfig.gameSpeed
+            else if (this.ball.posY >= pos + height / 7 && this.ball.posY <= pos + (height / 7) * 2)
+                this.ball.speedY = -1.4 * this.gameConfig.gameSpeed
+            else if (this.ball.posY >= pos + (height / 7) * 2 && this.ball.posY <= pos + (height / 7) * 3)
+                this.ball.speedY = -0.7 * this.gameConfig.gameSpeed
+            else if (this.ball.posY >= pos + (height / 7) * 3 && this.ball.posY <= pos + (height / 7) * 4)
+                this.ball.speedY = 0
+            else if (this.ball.posY >= pos + (height / 7) * 4 && this.ball.posY <= pos + (height / 7) * 5)
+                this.ball.speedY = 0.7 * this.gameConfig.gameSpeed
+            else if (this.ball.posY >= pos + (height / 7) * 5 && this.ball.posY <= pos + (height / 7) * 6)
+                this.ball.speedY = 1.4 * this.gameConfig.gameSpeed
+            else
+                this.ball.speedY = 2 * this.gameConfig.gameSpeed
             this.ball.speedX = -this.ball.speedX
             this.ball.hits++
         }
@@ -166,7 +157,7 @@ export class Game {
     }
 
     private beginLoop() {
-        this.context!.fillStyle = this.gameConfig.mode === 'original' ? 'white' : 'midnightblue'
+        this.context!.fillStyle = 'white'
         this.context!.font = '75px monospace'
     }
 
@@ -216,12 +207,61 @@ export class Game {
         this.context!.fillText("WIN !", this.table.width / 2.5, this.table.height / 1.3, this.table.width)
     }
 
+    private drawSpeedUpPowerUp(x: number, y: number) {
+        this.context!.fillStyle = 'red'
+        this.context!.beginPath()
+        this.context!.arc(x, y, this.ball.ray * 2, 0, 2 * Math.PI)
+        this.context!.fill()
+        this.context!.closePath()
+    }
+
+    private drawWallPowerUp(x: number, y: number) {
+        this.context!.fillStyle = 'blue'
+        this.context!.beginPath()
+        this.context!.arc(x, y, this.ball.ray * 2, 0, 2 * Math.PI)
+        this.context!.fill()
+        this.context!.closePath()
+    }
+
+    private drawShrinkPaddlePowerUp(x: number, y: number) {
+        this.context!.fillStyle = 'chartreuse'
+        this.context!.beginPath()
+        this.context!.arc(x, y, this.ball.ray * 2, 0, 2 * Math.PI)
+        this.context!.fill()
+        this.context!.closePath()
+    }
+
+    private drawInverseControlsPowerUp(x: number, y: number) {
+        this.context!.fillStyle = 'pink'
+        this.context!.beginPath()
+        this.context!.arc(x, y, this.ball.ray * 2, 0, 2 * Math.PI)
+        this.context!.fill()
+        this.context!.closePath()
+    }
+
+    private drawFakeBallPowerUp(x: number, y: number) {
+        this.context!.fillStyle = 'white'
+        this.context!.beginPath()
+        this.context!.arc(x, y, this.ball.ray * 2, 0, 2 * Math.PI)
+        this.context!.fill()
+        this.context!.closePath()
+    }
+
+    private drawGrowPaddlePowerUp(x: number, y: number) {
+        this.context!.fillStyle = 'yellow'
+        this.context!.beginPath()
+        this.context!.arc(x, y, this.ball.ray * 2, 0, 2 * Math.PI)
+        this.context!.fill()
+        this.context!.closePath()
+    }
+
     public update() {
-        this.updatePaddle()
         this.updateBall()
+        this.updatePaddle()
     }
 
     public draw(multi: number) {
+        this.context!.fillStyle = 'white'
         this.context!.clearRect(0, 0, this.table.width, this.table.height)
         for (let i = 0; i <= this.table.height; i += this.table.width / 35)
             this.context!.fillRect(this.table.width / 2 - this.table.width / 70, i, this.table.width / 70, this.table.width / 70)

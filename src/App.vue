@@ -1,23 +1,19 @@
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+export default defineComponent({})
+</script>
+
 <template>
-  <v-app>
-    <v-main>
-      <HelloWorld/>
-    </v-main>
-  </v-app>
+  <div>
+    <button id="chatButton" @click="$router.push('chat')">Chat</button>
+    |
+    <button id="homeButton" @click="$router.push('/')">Home</button>
+    |
+    <button id="gameButton" @click="$router.push('hub')">Game</button>
+  </div>
+  <router-view />
 </template>
 
-<script>
-import HelloWorld from './components/HelloWorld.vue'
-
-export default {
-  name: 'App',
-
-  components: {
-    HelloWorld,
-  },
-
-  data: () => ({
-    //
-  }),
-}
-</script>
+<style scoped>
+</style>

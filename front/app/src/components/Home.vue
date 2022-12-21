@@ -6,29 +6,9 @@ export default ({
 
 <template>
     <div>
-      <!-- <button id="chatButton" @click="$router.push('chat')"><div id="buttonContent">CHAT</div></button> -->
-      <!-- <button id="gameButton" @click="$router.push('hub')"><div id="buttonContent">GAME</div></button> -->
-      <router-link to="chat">
-        <img id="chatButton" alt="chatButton" src="/src/assets/pokeball_button.png">
-      </router-link>
-      <div id="chatButtonContent">
-        <b>test</b>
-      </div>
-      <!-- <router-link to="hub">
-        <img id="gameButton" alt="gameButton" src="/src/assets/pokeball_button.png">
-      </router-link> -->
+      <button id="chatButton" @click="$router.push('chat')">CHAT</button>
+      <button id="gameButton" @click="$router.push('hub')">GAME</button>
     </div>
 </template>
-
 <style scoped>
-#chatButton {
-  width: 10%;
-  position: absolute;
-  top: 40%;
-  left: 40%;
-}
-
-#gameButton {
-  width: 200px;
-}
 </style>

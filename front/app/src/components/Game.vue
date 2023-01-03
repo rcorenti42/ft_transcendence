@@ -202,4 +202,15 @@ export default {
 </template>
 
 <style scoped>
+#gameCanvas {
+  position: absolute;
+  top: 22%;
+  left: 28%;
+}
+
+#modeButton {
+  position: absolute;
+  top: 80%;
+  left: 45%;
+}
 </style>

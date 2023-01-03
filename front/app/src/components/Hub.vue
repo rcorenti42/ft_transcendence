@@ -49,7 +49,7 @@ h1 {
   font-family: "pokemon";
   font-size: 70px;
   color: rgb(255, 200, 0);
-  text-shadow: 1px 1px 2px rgb(25, 0, 255), 0 0 1em rgb(0, 0, 0), 0 0 0.2em rgb(2, 175, 255);
+  text-shadow: 2px 2px 4px rgb(0, 4, 255), 0 0 1em rgb(0, 0, 0), 0 0 0.2em rgb(2, 175, 255);
 }
 
 #startGameButton {
@@ -64,6 +64,6 @@ h1 {
   font-family: "pokemon";
   font-size: 25px;
   color: rgb(255, 200, 0);
-  text-shadow: 1px 1px 2px rgb(25, 0, 255), 0 0 1em rgb(0, 0, 0), 0 0 0.2em rgb(2, 175, 255);
+  text-shadow: 2px 2px 4px rgb(0, 4, 255), 0 0 1em rgb(0, 0, 0), 0 0 0.2em rgb(2, 175, 255);
 }
 </style>

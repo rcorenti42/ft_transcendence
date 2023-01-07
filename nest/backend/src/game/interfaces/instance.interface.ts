@@ -1,26 +1,26 @@
-import { Player } from './player.interface'
-import { GameOptions } from './game-options.interface'
+// import { Player } from './player.interface'
+// import { GameOptions } from './game-options.interface'
 
-enum State {
-    WAIT,
-    IG,
-    STOP
-}
+// enum State {
+//     WAIT,
+//     IG,
+//     STOP
+// }
 
-interface Cartesian {
-    x: number
-    y: number
-}
+// interface Cartesian {
+//     x: number
+//     y: number
+// }
 
-interface  Ball {
-    pos: Cartesian
-    lastPos: Cartesian
-    speed: Cartesian
-}
+// interface  Ball {
+//     pos: Cartesian
+//     lastPos: Cartesian
+//     speed: Cartesian
+// }
 
-export interface Instance {
-    players: Array<Player>
-    options: GameOptions
-    ball: Ball
-    state: State
-}
+// export interface Instance {
+//     players: Array<Player>
+//     options: GameOptions
+//     ball: Ball
+//     state: State
+// }
